@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>앰엔에이치 | 문서 파서 · AI 에이전트 구축 · AI 교육</title>
 <meta name="description" content="앰엔에이치는 회사 문서를 AI가 읽을 수 있게 만들고(문서 파서), 그 위에서 업무를 끝내는 AI 에이전트를 구축하고, 팀이 직접 쓰도록 교육합니다.">
-<meta name="theme-color" content="#062A20">
+<meta name="theme-color" content="#10171c">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="ko_KR">
 <meta property="og:site_name" content="앰엔에이치">
@@ -370,14 +370,16 @@ footer ul{list-style:none;display:grid;gap:8px}
   .ba-foot{grid-template-columns:1fr 1fr 1fr}
 }
 </style>
+<link rel="stylesheet" href="refinement.css">
 </head>
 <body>
+<a class="skip-link" href="#products">본문으로 바로가기</a>
 
 <header>
   <div class="wrap nav">
-    <a href="#top" class="logo" aria-label="앰엔에이치 홈"><span class="logo-mark">MN</span>앰엔에이치</a>
+    <a href="#top" class="logo" aria-label="앰엔에이치 홈"><span class="wordmark">MNH<span class="brand-dot">.</span></span><span class="brand-name">앰엔에이치</span></a>
     <nav class="menu" id="menu" aria-label="주 메뉴">
-      <a href="#products">상품</a><a href="#parse">문서 파서</a><a href="#agent">에이전트</a><a href="#academy">교육</a><a href="#proof-eval">검증 방식</a><a href="#industries">산업</a>
+      <a href="#products">솔루션</a><a href="#method">진행 방식</a><a href="#industries">적용 산업</a><a href="#academy">교육</a><a href="#proof-eval">검증</a>
     </nav>
     <a href="#contact" class="btn btn-coral">도입 상담</a>
     <button class="burger" id="burger" aria-label="메뉴 열기" aria-expanded="false" aria-controls="menu">
@@ -392,8 +394,8 @@ footer ul{list-style:none;display:grid;gap:8px}
   <div class="wrap hero-grid">
     <div class="rv">
       <span class="eyebrow">Document AI · Agent · Academy</span>
-      <h1>회사 문서를 <em>읽고</em>,<br>업무를 <em>끝내는</em> AI를<br>만듭니다.</h1>
-      <p>앰엔에이치는 흩어진 문서를 AI가 정확히 읽게 만들고, 그 위에서 일을 처리하는 AI 에이전트를 구축하고, 팀이 직접 쓰도록 교육합니다. 효과는 우리가 아니라 정답표로 보여 드립니다.</p>
+      <h1>문서를 이해하고,<br>업무를 움직이는 AI.</h1>
+      <p>흩어진 문서를 읽을 수 있는 데이터로, 반복 업무를 실행하는 에이전트로.<br class="desktop-break"> 앰엔에이치는 데이터부터 구축, 교육까지 함께합니다.</p>
       <div class="hero-prods"><span class="chip dark">① 문서 파서 구축</span><span class="chip dark">② AI 에이전트 구축</span><span class="chip dark">③ AI 실무 교육</span></div>
       <div class="hero-cta">
         <a href="#contact" class="btn btn-coral">업무 하나로 상담하기
@@ -403,23 +405,13 @@ footer ul{list-style:none;display:grid;gap:8px}
       <div class="hero-note">기밀 문서 없이, 바꾸고 싶은 업무 한 줄이면 시작할 수 있습니다.</div>
     </div>
 
-    <div class="rv" style="position:relative">
-      <div class="mock" role="img" aria-label="문서가 구조화 데이터로 바뀌고 에이전트가 업무를 처리하는 화면 예시">
-        <div class="mock-top"><span class="mock-title">견적 요청서 → 견적서 초안</span><span class="chip">● 처리 중</span></div>
-        <div class="flow">
-          <div class="docbox"><span class="h">스캔 PDF · 3쪽</span><div class="ln"></div><div class="ln m"></div><div class="tbl"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="ln s"></div></div>
-          <span class="arrowc">→</span>
-          <div class="json"><span class="k">"품목"</span>: <span class="s">"SUS304 판재"</span>,
-<span class="k">"수량"</span>: 120,
-<span class="k">"납기"</span>: <span class="s">"2026-12-04"</span>,
-<span class="k">"출처"</span>: <span class="s">"2쪽 · 표1 · 3행"</span></div>
-        </div>
-        <div class="mock-agent">
-          <div class="task"><i>견</i><div>견적서 초안 작성 완료<small>원가표 · 지난 계약 3건 참고</small></div><span class="go">승인 필요</span></div>
-          <div class="task"><i>메</i><div>회신 메일 초안 준비<small>담당자 승인 후 발송</small></div><span class="chip">대기</span></div>
-        </div>
-      </div>
-      <div class="dummy">화면 예시 · 더미 데이터</div>
+    <div class="hero-art" aria-hidden="true">
+      <svg viewBox="0 0 620 520" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs><linearGradient id="wire" x1="60" y1="40" x2="570" y2="480" gradientUnits="userSpaceOnUse"><stop stop-color="#bce4d3" stop-opacity=".1"/><stop offset=".5" stop-color="#bce4d3" stop-opacity=".6"/><stop offset="1" stop-color="#bce4d3" stop-opacity=".05"/></linearGradient></defs>
+        <g stroke="url(#wire)"><path d="M65 180 310 40 555 180 555 340 310 480 65 340Z"/><path d="M65 180 310 320 555 180M310 320V480M310 40V200M65 340 310 200 555 340"/><path d="M188 110 433 250 433 410M188 410V250L433 110M65 260 310 120 555 260 310 400Z"/><path d="M188 110V270L310 340 433 270V110M65 180 310 40 555 180"/></g>
+        <g fill="#a5cebc"><circle cx="310" cy="200" r="5"/><circle cx="310" cy="320" r="4"/><circle cx="433" cy="250" r="4"/><circle cx="188" cy="250" r="3"/><circle cx="65" cy="180" r="3"/><circle cx="555" cy="340" r="3"/></g>
+      </svg>
+      <span class="art-label art-a">01 / DOCUMENT</span><span class="art-label art-b">02 / INTELLIGENCE</span><span class="art-label art-c">03 / ACTION</span>
     </div>
   </div>
 </section>
@@ -745,8 +737,8 @@ footer ul{list-style:none;display:grid;gap:8px}
       </div>
     </div>
     <form id="form" class="rv" novalidate>
-      <label>관심 상품
-        <div class="pick"><label><input type="checkbox" name="p" value="parse">문서 파서</label><label><input type="checkbox" name="p" value="agent">AI 에이전트</label><label><input type="checkbox" name="p" value="academy">교육</label><label><input type="checkbox" name="p" value="unknown">아직 모름</label></div></label>
+      <fieldset><legend>관심 상품</legend>
+        <div class="pick"><label><input type="checkbox" name="p" value="parse">문서 파서</label><label><input type="checkbox" name="p" value="agent">AI 에이전트</label><label><input type="checkbox" name="p" value="academy">교육</label><label><input type="checkbox" name="p" value="unknown">아직 모름</label></div></fieldset>
       <div class="row2">
         <label>회사 · 부서<input name="company" required autocomplete="organization" placeholder="예: OO제조 구매팀"></label>
         <label>이름<input name="name" required autocomplete="name" placeholder="홍길동"></label>
@@ -756,9 +748,9 @@ footer ul{list-style:none;display:grid;gap:8px}
       <label>문서·데이터 환경
         <select name="env"><option value="">선택해 주세요</option><option>클라우드 사용 가능</option><option>사내 서버만 가능</option><option>폐쇄망</option><option>아직 모름</option></select></label>
       <label class="consent"><input type="checkbox" name="agree" required> 상담을 위한 개인정보 수집·이용에 동의합니다(<a href="privacy.html" style="text-decoration:underline">방침 보기</a>). 기밀 문서는 보내지 않으셔도 됩니다.</label>
-      <button class="btn btn-dark" type="submit">상담 요청 보내기</button>
-      <div class="sent" id="sent" role="status"><b>접수 준비 완료.</b> 시안이라 아직 실제로 전송되지 않습니다. 접수 메일 연결 후 동작합니다.</div>
-      <p class="form-note">입력하신 정보는 상담 목적으로만 사용합니다.</p>
+      <button class="btn btn-dark" type="submit">상담 내용 확인하기 →</button>
+      <div class="sent" id="sent" role="status"><b>입력 내용을 확인했습니다.</b> 아직 전송되지 않았습니다. 상담 접수 연결 전까지 이 화면은 미리보기로만 동작합니다.</div>
+      <p class="form-note">현재 상담 폼은 시안입니다. 입력 정보는 서버로 전송되지 않습니다.</p>
     </form>
   </div>
 </section>
@@ -768,7 +760,7 @@ footer ul{list-style:none;display:grid;gap:8px}
   <div class="wrap">
     <div class="f-grid">
       <div>
-        <a href="#top" class="logo" style="margin-bottom:14px"><span class="logo-mark">MN</span>앰엔에이치</a>
+        <a href="#top" class="logo" style="margin-bottom:14px"><span class="wordmark">MNH<span class="brand-dot">.</span></span><span class="brand-name">앰엔에이치</span></a>
         <p>문서를 읽고, 업무를 끝내는 기업 AI.</p>
         <p style="margin-top:14px">주식회사 앰엔에이치 · 대표 유지연<br>사업자등록번호 282-86-04150<br>부산광역시 부산진구 양지로 24-9, 3층(양정동)<br>개인정보 보호책임자 김화현</p>
       </div>
@@ -782,6 +774,7 @@ footer ul{list-style:none;display:grid;gap:8px}
 <script>
 const b=document.getElementById('burger'),m=document.getElementById('menu');
 b.addEventListener('click',()=>{const o=m.classList.toggle('open');b.setAttribute('aria-expanded',o)});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){m.classList.remove('open');b.setAttribute('aria-expanded','false');}});
 m.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{m.classList.remove('open');b.setAttribute('aria-expanded',false)}));
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.1});
 document.querySelectorAll('.rv').forEach((el,i)=>{el.style.transitionDelay=(i%4)*70+'ms';io.observe(el)});
