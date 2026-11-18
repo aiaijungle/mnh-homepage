@@ -1,0 +1,800 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MNH | Enterprise AI · Data Pipelines · Agents</title>
+<meta name="description" content="From document parsing and domain ontologies to RAG, AI agents, deployment design and team training. Explore enterprise AI implementation with MNH.">
+<meta name="theme-color" content="#10171c">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="MNH">
+<meta property="og:title" content="MNH | Enterprise AI connecting data and operations">
+<meta property="og:description" content="Document parsing, data pipelines, domain ontologies and AI agents. Designed and validated against evaluation datasets.">
+<meta property="og:image" content="og.png">
+<link rel="alternate" hreflang="ko" href="index.html">
+<link rel="alternate" hreflang="en" href="en.html">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+:root{
+  --g900:#062A20; --g800:#0B3B2E; --g700:#11543F; --g600:#1E7A57; --g500:#2E9A6C; --g300:#8FD3A9; --g100:#DCEFE2; --g50:#F3F7F2;
+  --lime:#B7E36A; --coral:#FF7A59; --coral-d:#E8603F;
+  --ink:#0E1A15; --ink2:#3E4C45; --ink3:#6E7B74; --line:#E3EAE5; --card:#FFFFFF;
+  --r-lg:28px; --r-md:20px; --r-sm:14px;
+  --shadow:0 1px 2px rgba(6,42,32,.06),0 12px 32px -12px rgba(6,42,32,.18);
+  --shadow-dark:0 30px 80px -20px rgba(0,0,0,.55);
+  --pad:max(20px, env(safe-area-inset-left, 0px));
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Consolas,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:"Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:var(--ink);background:var(--g50);
+  -webkit-font-smoothing:antialiased;word-break:keep-all;line-height:1.6;font-feature-settings:"tnum"}
+a{color:inherit;text-decoration:none}
+img,svg{display:block;max-width:100%}
+button,input,select,textarea{font:inherit;color:inherit}
+.wrap{max-width:1200px;margin:0 auto;padding-left:var(--pad);padding-right:max(20px, env(safe-area-inset-right, 0px))}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--g600)}
+.eyebrow::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+h1,h2,h3{letter-spacing:-.025em;line-height:1.2;text-wrap:balance}
+h2{font-size:clamp(28px,3.6vw,44px);font-weight:800}
+.lead{font-size:clamp(16px,1.6vw,19px);color:var(--ink2);max-width:660px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:52px;padding:0 24px;border-radius:999px;font-weight:700;font-size:16px;border:0;cursor:pointer;transition:all .2s}
+.btn-coral{background:var(--coral);color:#fff;box-shadow:0 10px 24px -10px rgba(255,122,89,.7)}
+.btn-coral:hover{background:var(--coral-d);transform:translateY(-1px)}
+.btn-ghost{background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.22)}
+.btn-ghost:hover{background:rgba(255,255,255,.16)}
+.btn-dark{background:var(--g800);color:#fff}
+.btn-dark:hover{background:var(--g700)}
+.btn-line{background:#fff;border:1px solid var(--line);color:var(--ink)}
+.btn-line:hover{border-color:var(--g500);color:var(--g700)}
+section{padding:112px 0}
+.sec-head{display:grid;gap:16px;margin-bottom:56px}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:5px 10px;border-radius:999px;background:var(--g100);color:var(--g700);white-space:nowrap}
+.chip.coral{background:#FFE9E2;color:var(--coral-d)}
+.chip.dark{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.16)}
+.caption{margin-top:12px;font-size:12px;color:var(--ink3)}
+
+/* header */
+header{position:sticky;top:0;z-index:50;background:rgba(6,42,32,.84);backdrop-filter:saturate(1.4) blur(14px);-webkit-backdrop-filter:saturate(1.4) blur(14px);border-bottom:1px solid rgba(255,255,255,.08)}
+.nav{display:flex;align-items:center;justify-content:space-between;height:68px;gap:20px}
+.logo{display:flex;align-items:center;gap:10px;color:#fff;font-weight:800;font-size:19px;letter-spacing:-.02em}
+.logo-mark{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,var(--lime),var(--g500));display:grid;place-items:center;color:var(--g900);font-size:13px;font-weight:900}
+.menu{display:flex;gap:28px;color:rgba(255,255,255,.78);font-size:15px;font-weight:500}
+.menu a:hover{color:#fff}
+.nav .btn{min-height:42px;padding:0 18px;font-size:14px}
+.burger{display:none;background:none;border:0;color:#fff;width:44px;height:44px;cursor:pointer}
+
+/* hero */
+.hero{position:relative;overflow:hidden;background:radial-gradient(1200px 600px at 85% -10%,#1E7A57 0%,transparent 60%),radial-gradient(900px 500px at -10% 110%,#11543F 0%,transparent 55%),var(--g900);color:#fff;padding:92px 0 128px}
+.hero::after{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);background-size:56px 56px;mask-image:linear-gradient(180deg,rgba(0,0,0,.6),transparent 80%);pointer-events:none}
+.hero-grid{position:relative;z-index:1;display:grid;grid-template-columns:1.02fr 1fr;gap:56px;align-items:center}
+.hero .eyebrow{color:var(--lime)}
+.hero h1{font-size:clamp(36px,5vw,64px);font-weight:800;margin:20px 0 22px}
+.hero h1 em{font-style:normal;color:var(--lime)}
+.hero p{color:rgba(255,255,255,.78);font-size:clamp(16px,1.6vw,19px);max-width:540px}
+.hero-prods{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+.hero-cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:34px}
+.hero-note{margin-top:20px;font-size:14px;color:rgba(255,255,255,.55)}
+
+/* hero mock */
+.mock{position:relative;background:#fff;color:var(--ink);border-radius:var(--r-lg);box-shadow:var(--shadow-dark);padding:22px;transform:perspective(1600px) rotateY(-6deg) rotateX(3deg);transition:transform .4s}
+.mock:hover{transform:perspective(1600px) rotateY(-2deg) rotateX(1deg)}
+.mock-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:10px}
+.mock-title{font-weight:800;font-size:15px}
+.flow{display:grid;grid-template-columns:1fr 34px 1fr;align-items:center;gap:6px}
+.docbox{border:1px solid var(--line);border-radius:var(--r-sm);padding:12px;background:var(--g50);display:grid;gap:7px}
+.docbox .h{font-size:11px;font-weight:700;color:var(--ink3)}
+.ln{height:7px;border-radius:4px;background:#D6DED9}
+.ln.s{width:60%}.ln.m{width:80%}
+.tbl{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;margin-top:2px}
+.tbl i{height:12px;border-radius:3px;background:#C9D6CE}
+.tbl i:nth-child(-n+3){background:#9DBBA8}
+.arrowc{width:34px;height:34px;border-radius:50%;background:var(--coral);color:#fff;display:grid;place-items:center;font-weight:800}
+.json{border-radius:var(--r-sm);background:var(--g900);color:#CFE8D6;padding:12px;font-family:var(--mono);font-size:11px;line-height:1.55;overflow:hidden;white-space:pre}
+.json .k{color:var(--lime)} .json .s{color:#FFC8B8}
+.mock-agent{margin-top:12px;display:grid;gap:8px}
+.task{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--line);border-radius:var(--r-sm);font-size:14px}
+.task i{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;font-style:normal;font-size:13px;flex:none;background:var(--g100);color:var(--g700);font-weight:800}
+.task div{flex:1;min-width:0}
+.task small{display:block;color:var(--ink3);font-size:12px}
+.task .go{font-size:12px;font-weight:700;color:#fff;background:var(--coral);padding:6px 10px;border-radius:999px;white-space:nowrap}
+.dummy{position:absolute;right:18px;bottom:-40px;font-size:12px;color:rgba(255,255,255,.5)}
+
+/* proof */
+.proof{background:var(--g900);border-top:1px solid rgba(255,255,255,.06);padding:34px 0 40px;color:#fff}
+.proof-head{font-size:14px;color:rgba(255,255,255,.6);margin-bottom:18px}
+.proof-head b{color:#fff}
+.proof-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
+.pf{border:1px solid rgba(255,255,255,.1);border-radius:var(--r-md);padding:18px;background:rgba(255,255,255,.03)}
+.pf b{display:block;font-size:30px;font-weight:800;letter-spacing:-.03em;color:var(--lime);line-height:1.1}
+.pf span{font-size:13px;color:rgba(255,255,255,.72)}
+.proof-note{margin-top:14px;font-size:12px;color:rgba(255,255,255,.4)}
+
+/* problems */
+.problems{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.prob{background:var(--card);border-radius:var(--r-md);padding:28px 24px;box-shadow:var(--shadow);display:grid;gap:12px;align-content:start;transition:transform .2s}
+.prob:hover{transform:translateY(-4px)}
+.num{font-size:14px;font-weight:800;color:var(--coral)}
+.prob h3{font-size:20px;font-weight:800}
+.prob p{color:var(--ink2);font-size:15px}
+.prob .fix{margin-top:4px;font-size:13px;font-weight:700;color:var(--g600)}
+
+/* products */
+.products{background:#fff}
+.prods{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.prod{border-radius:var(--r-lg);padding:32px 28px;background:var(--g50);display:grid;gap:16px;align-content:start;position:relative;border:1px solid transparent;transition:transform .2s,border-color .2s}
+.prod:hover{transform:translateY(-4px);border-color:var(--g300)}
+.prod.feature{background:linear-gradient(165deg,var(--g800),var(--g700));color:#fff}
+.prod .pname{display:flex;align-items:center;gap:12px}
+.pico{width:52px;height:52px;border-radius:16px;display:grid;place-items:center;background:var(--g100);color:var(--g700);flex:none}
+.prod.feature .pico{background:rgba(183,227,106,.16);color:var(--lime)}
+.prod .kicker{font-size:12px;font-weight:700;letter-spacing:.06em;color:var(--g600)}
+.prod.feature .kicker{color:var(--lime)}
+.prod h3{font-size:24px;font-weight:800}
+.prod .one{font-size:16px;color:var(--ink2)}
+.prod.feature .one{color:rgba(255,255,255,.82)}
+.prod dl{display:grid;gap:12px;border-top:1px solid var(--line);padding-top:16px}
+.prod.feature dl{border-color:rgba(255,255,255,.14)}
+.prod dt{font-size:12px;font-weight:700;color:var(--ink3);letter-spacing:.04em}
+.prod.feature dt{color:rgba(255,255,255,.55)}
+.prod dd{font-size:15px;color:var(--ink2)}
+.prod.feature dd{color:rgba(255,255,255,.85)}
+.prod ul{list-style:none;display:grid;gap:7px}
+.prod li{display:flex;gap:9px;font-size:15px;color:var(--ink2)}
+.prod.feature li{color:rgba(255,255,255,.85)}
+.prod li::before{content:"";flex:none;width:18px;height:18px;margin-top:3px;border-radius:6px;background:var(--g100) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231E7A57' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12l4 4 10-10'/%3E%3C/svg%3E") center/12px no-repeat}
+.prod .tags{display:flex;flex-wrap:wrap;gap:6px}
+.prod .more{font-weight:700;font-size:15px;color:var(--g700);display:inline-flex;gap:6px;align-items:center}
+.prod.feature .more{color:var(--lime)}
+
+/* parser deep */
+.deep{display:grid;grid-template-columns:1fr 1.1fr;gap:48px;align-items:center}
+.pipe{display:grid;gap:10px;counter-reset:p}
+.pstep{display:grid;grid-template-columns:44px 1fr;gap:14px;align-items:start;background:#fff;border-radius:var(--r-md);padding:18px 20px;box-shadow:var(--shadow)}
+.pstep .pn{width:44px;height:44px;border-radius:14px;background:var(--g800);color:var(--lime);display:grid;place-items:center;font-weight:800}
+.pstep h3{font-size:17px;font-weight:800;margin-bottom:2px}
+.pstep p{font-size:14px;color:var(--ink2)}
+.pstep .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.ba{background:var(--g900);border-radius:32px;padding:26px;box-shadow:var(--shadow-dark);color:#fff;display:grid;gap:14px}
+.ba-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.ba-head b{font-size:18px}
+.ba-cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.scan{background:#F7F5EE;border-radius:var(--r-sm);padding:14px;color:#3a3a32;font-size:11px;transform:rotate(-1deg);box-shadow:0 8px 20px -8px rgba(0,0,0,.4);position:relative}
+.scan .t{font-weight:800;font-size:12px;margin-bottom:8px}
+.scan table{width:100%;border-collapse:collapse;font-size:10.5px}
+.scan td,.scan th{border:1px solid #b9b5a6;padding:4px 5px;text-align:left}
+.scan th{background:#e9e5d6}
+.scan .stamp{position:absolute;right:10px;bottom:10px;width:44px;height:44px;border:2px solid rgba(220,60,40,.6);border-radius:50%;color:rgba(220,60,40,.7);font-size:9px;display:grid;place-items:center;transform:rotate(12deg);font-weight:800}
+.ba .json{font-size:11px}
+.ba-foot{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.ba-foot div{background:rgba(255,255,255,.06);border-radius:var(--r-sm);padding:12px}
+.ba-foot b{display:block;font-size:20px;color:var(--lime)}
+.ba-foot span{font-size:12px;color:rgba(255,255,255,.65)}
+
+/* agent showcase */
+.show{background:linear-gradient(180deg,var(--g50),#E6F0E8)}
+.show-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:44px;align-items:center}
+.board{background:var(--g900);border-radius:32px;padding:28px;box-shadow:var(--shadow-dark);color:#fff}
+.board-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:22px}
+.board-head h3{font-size:clamp(22px,2.4vw,30px);font-weight:800}
+.board-head h3 em{font-style:normal;color:var(--lime)}
+.board-head .big{text-align:right}
+.board-head .big small{display:block;color:rgba(255,255,255,.6);font-size:12px}
+.board-head .big b{font-size:30px;font-weight:800;letter-spacing:-.02em}
+.decide{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.dcard{background:#fff;color:var(--ink);border-radius:var(--r-md);padding:18px;display:grid;gap:10px}
+.dcard .n{font-size:30px;font-weight:800;letter-spacing:-.03em;color:var(--g700)}
+.dcard .n small{font-size:14px;color:var(--ink3);font-weight:600;margin-left:2px}
+.dcard p{font-size:13px;color:var(--ink2);line-height:1.5}
+.dcard .act{display:flex;gap:6px}
+.dcard .act span{flex:1;text-align:center;font-size:12px;font-weight:700;padding:8px 0;border-radius:10px;background:var(--g50);color:var(--ink2)}
+.dcard .act span.y{background:var(--coral);color:#fff}
+.lanes{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}
+.lane{background:rgba(255,255,255,.06);border-radius:var(--r-sm);padding:12px;font-size:12px;color:rgba(255,255,255,.75);display:grid;gap:6px}
+.lane b{color:#fff;font-size:13px}
+.lane .bar{height:6px;border-radius:4px;background:rgba(255,255,255,.12);overflow:hidden}
+.lane .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--g500),var(--lime))}
+.points{display:grid;gap:22px}
+.point{display:grid;grid-template-columns:44px 1fr;gap:16px}
+.point .pn{width:44px;height:44px;border-radius:14px;background:var(--coral);color:#fff;font-weight:800;display:grid;place-items:center}
+.point h3{font-size:19px;font-weight:800;margin-bottom:4px}
+.point p{color:var(--ink2);font-size:15px}
+
+/* evaluation */
+.evalsec{background:#fff}
+.eval-grid{display:grid;grid-template-columns:1fr 1.15fr;gap:48px;align-items:center}
+.report{border-radius:var(--r-lg);background:var(--g50);padding:28px;display:grid;gap:16px;border:1px solid var(--line)}
+.report-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.report-head b{font-size:18px}
+.metrics{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.metric{background:#fff;border-radius:var(--r-md);padding:18px;box-shadow:var(--shadow)}
+.metric small{display:block;font-size:13px;color:var(--ink3)}
+.metric .row{display:flex;align-items:baseline;gap:10px;margin-top:6px}
+.metric .from{font-size:16px;color:var(--ink3);text-decoration:line-through}
+.metric .to{font-size:30px;font-weight:800;letter-spacing:-.03em;color:var(--g700)}
+.metric .to.c{color:var(--coral-d)}
+.fails{background:#fff;border-radius:var(--r-md);padding:16px 18px;box-shadow:var(--shadow);font-size:14px;color:var(--ink2);display:grid;gap:8px}
+.fails b{color:var(--ink)}
+.fails div{display:flex;justify-content:space-between;gap:12px}
+.rules{display:grid;gap:14px;margin-top:8px}
+.rule{display:grid;grid-template-columns:28px 1fr;gap:12px;color:var(--ink2)}
+.rule i{width:28px;height:28px;border-radius:9px;background:var(--g100);color:var(--g700);font-style:normal;font-weight:800;font-size:13px;display:grid;place-items:center}
+.rule b{color:var(--ink)}
+
+/* method */
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.step{position:relative;border-radius:var(--r-lg);padding:28px 24px;background:#fff;box-shadow:var(--shadow);display:grid;gap:12px;align-content:start}
+.step .tag{font-size:13px;font-weight:700;color:var(--g600)}
+.step h3{font-size:21px;font-weight:800}
+.step p{color:var(--ink2);font-size:15px}
+.step .out{border-top:1px dashed var(--line);padding-top:12px;font-size:13px;color:var(--ink3)}
+.step .out b{color:var(--ink);display:block;margin-bottom:2px}
+.step.active{background:linear-gradient(160deg,var(--g800),var(--g700));color:#fff}
+.step.active p{color:rgba(255,255,255,.8)}
+.step.active .tag{color:var(--lime)}
+.step.active .out{border-color:rgba(255,255,255,.2);color:rgba(255,255,255,.7)}
+.step.active .out b{color:#fff}
+
+/* do / don't */
+.dodont{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.dd{border-radius:var(--r-lg);padding:30px;display:grid;gap:14px;align-content:start}
+.dd.do{background:var(--g800);color:#fff}
+.dd.dont{background:#fff;box-shadow:var(--shadow)}
+.dd h3{font-size:22px;font-weight:800}
+.dd ul{list-style:none;display:grid;gap:12px}
+.dd li{display:grid;grid-template-columns:22px 1fr;gap:10px;font-size:15px}
+.dd.do li{color:rgba(255,255,255,.85)}
+.dd.dont li{color:var(--ink2)}
+.dd li::before{content:"✓";font-weight:800;color:var(--lime)}
+.dd.dont li::before{content:"✕";color:var(--coral-d)}
+.dd li b{display:block;color:inherit}
+.dd.do li b{color:#fff}
+.dd.dont li b{color:var(--ink)}
+.engines{margin-top:20px;background:#fff;border-radius:var(--r-md);padding:20px 22px;box-shadow:var(--shadow);display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.engines b{font-size:15px}
+.engines .tags{display:flex;gap:8px;flex-wrap:wrap}
+
+/* industries */
+.inds{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.ind{border-radius:var(--r-md);background:#fff;box-shadow:var(--shadow);overflow:hidden;display:grid;grid-template-rows:auto 1fr}
+.ind-top{background:linear-gradient(140deg,var(--g800),var(--g600));color:#fff;padding:22px;display:grid;gap:10px}
+.ind-top small{color:var(--lime);font-weight:700;font-size:12px;letter-spacing:.06em}
+.ind-top h3{font-size:21px;font-weight:800}
+.ind-top .we{font-size:13px;color:rgba(255,255,255,.78);border-top:1px solid rgba(255,255,255,.14);padding-top:10px}
+.ind-top .we b{color:var(--lime)}
+.ind-body{padding:20px 22px;display:grid;gap:12px;font-size:14px;color:var(--ink2);align-content:start}
+.ind-body b{display:block;color:var(--ink);font-size:13px;margin-bottom:2px}
+.ind-body .prodtag{display:flex;gap:6px;flex-wrap:wrap;margin-top:2px}
+
+/* security */
+.sec{background:var(--g900);color:#fff}
+.sec .lead{color:rgba(255,255,255,.72)}
+.sec .eyebrow{color:var(--lime)}
+.deploy{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.dep{border:1px solid rgba(255,255,255,.12);border-radius:var(--r-md);padding:28px;background:rgba(255,255,255,.03);display:grid;gap:10px;transition:background .2s;align-content:start}
+.dep:hover{background:rgba(255,255,255,.07)}
+.dep .chip{justify-self:start}
+.dep h3{font-size:20px;font-weight:800}
+.dep p{color:rgba(255,255,255,.7);font-size:15px}
+.guards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:16px}
+.guard{border-radius:var(--r-sm);padding:18px;background:rgba(183,227,106,.08);border:1px solid rgba(183,227,106,.2);font-size:14px;color:rgba(255,255,255,.85)}
+.guard b{display:block;color:var(--lime);font-size:15px;margin-bottom:4px}
+
+/* academy */
+.edu{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.course{background:#fff;border-radius:var(--r-lg);padding:26px;box-shadow:var(--shadow);display:grid;gap:10px;align-content:start}
+.course .who{font-size:13px;font-weight:700;color:var(--coral)}
+.course h3{font-size:20px;font-weight:800}
+.course p{color:var(--ink2);font-size:15px}
+.course .out{font-size:13px;color:var(--ink3);border-top:1px dashed var(--line);padding-top:10px}
+.course.link{background:linear-gradient(160deg,var(--g800),var(--g700));color:#fff}
+.course.link p,.course.link .out{color:rgba(255,255,255,.8);border-color:rgba(255,255,255,.2)}
+.course.link .who{color:var(--lime)}
+
+/* faq */
+.faq{background:#fff}
+.faq-list{display:grid;gap:12px;max-width:880px}
+details{background:var(--g50);border-radius:var(--r-md);padding:4px 22px;border:1px solid transparent;transition:border-color .2s}
+details[open]{border-color:var(--g300);background:#fff}
+summary{cursor:pointer;list-style:none;font-weight:700;font-size:17px;padding:18px 0;display:flex;justify-content:space-between;gap:16px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font-size:24px;color:var(--g600);transition:transform .2s;flex:none}
+details[open] summary::after{transform:rotate(45deg)}
+details p{color:var(--ink2);padding:0 0 20px;font-size:15px}
+
+/* contact */
+.contact-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:56px;align-items:start}
+.c-points{display:grid;gap:14px;margin-top:28px}
+.c-points div{display:flex;gap:12px;align-items:flex-start;color:var(--ink2)}
+.c-points i{flex:none;width:26px;height:26px;border-radius:8px;background:var(--g100);color:var(--g700);display:grid;place-items:center;font-style:normal;font-weight:800;font-size:13px}
+form{background:#fff;border-radius:var(--r-lg);padding:32px;display:grid;gap:16px;box-shadow:var(--shadow)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+label{display:grid;gap:8px;font-size:14px;font-weight:600;color:var(--ink2)}
+input,select,textarea{width:100%;min-height:50px;border:1px solid var(--line);background:#fff;border-radius:12px;padding:12px 14px;font-size:16px;transition:border .2s,box-shadow .2s}
+textarea{min-height:110px;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:0;border-color:var(--g500);box-shadow:0 0 0 4px rgba(46,154,108,.15)}
+.pick{display:flex;flex-wrap:wrap;gap:8px}
+.pick label{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border:1px solid var(--line);border-radius:999px;font-weight:600;font-size:14px;cursor:pointer;transition:all .2s}
+.pick input{width:auto;min-height:0;accent-color:var(--g600)}
+.pick label:has(input:checked){border-color:var(--g500);background:var(--g100);color:var(--g700)}
+.consent{display:flex;gap:10px;align-items:flex-start;font-weight:500;font-size:13px;color:var(--ink3)}
+.consent input{width:20px;min-height:20px;height:20px;margin-top:2px;accent-color:var(--g600)}
+.form-note{font-size:13px;color:var(--ink3)}
+.sent{display:none;background:var(--g800);color:#fff;border-radius:var(--r-md);padding:20px;font-size:15px}
+.sent b{color:var(--lime)}
+
+/* footer */
+footer{background:var(--g900);color:rgba(255,255,255,.6);padding:56px 0 calc(40px + env(safe-area-inset-bottom,0px));font-size:14px}
+.f-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:32px}
+footer h4{color:#fff;font-size:14px;margin-bottom:12px}
+footer ul{list-style:none;display:grid;gap:8px}
+.todo{color:#FFB49F}
+.f-bottom{margin-top:40px;padding-top:24px;border-top:1px solid rgba(255,255,255,.08);display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+
+/* reveal */
+.rv{opacity:0;transform:translateY(18px);transition:opacity .7s ease,transform .7s ease}
+.rv.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none}.mock,.mock:hover{transform:none}}
+
+/* responsive */
+@media(max-width:1100px){
+  .hero-grid,.show-grid,.contact-grid,.deep,.eval-grid{grid-template-columns:1fr}
+  .problems,.guards,.edu,.steps{grid-template-columns:repeat(2,1fr)}
+  .prods,.inds{grid-template-columns:repeat(2,1fr)}
+  .proof-grid{grid-template-columns:repeat(3,1fr)}
+  .mock{transform:none}
+}
+@media(max-width:860px){
+  .menu,.nav .btn-coral{display:none}
+  .burger{display:grid;place-items:center}
+  .menu.open{display:grid;position:absolute;top:68px;left:0;right:0;background:var(--g900);padding:12px var(--pad) 24px;gap:4px}
+  .menu.open a{padding:12px 0;border-bottom:1px solid rgba(255,255,255,.08)}
+  .prods,.deploy,.dodont{grid-template-columns:1fr}
+  .decide{grid-template-columns:1fr}
+  .lanes{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:480px){
+  section{padding:76px 0}
+  .hero{padding:60px 0 104px}
+  .problems,.inds,.guards,.row2,.edu,.steps,.metrics,.ba-cols{grid-template-columns:1fr}
+  .proof-grid{grid-template-columns:repeat(2,1fr)}
+  .btn{width:100%}
+  .hero-cta{flex-direction:column}
+  form{padding:22px}
+  .board,.ba{padding:20px}
+  .board-head{flex-direction:column}
+  .board-head .big{text-align:left}
+  .f-grid{grid-template-columns:1fr}
+  .flow{grid-template-columns:1fr;justify-items:stretch}
+  .arrowc{justify-self:center;transform:rotate(90deg)}
+  .ba-foot{grid-template-columns:1fr 1fr 1fr}
+}
+</style>
+<link rel="stylesheet" href="refinement.css">
+</head>
+<body>
+<a class="skip-link" href="#products">Skip to content</a>
+
+<header>
+  <div class="wrap nav">
+    <a href="#top" class="logo" aria-label="MNH home"><span class="wordmark">MNH<span class="brand-dot">.</span></span><span class="brand-name">MNH</span></a>
+    <nav class="menu" id="menu" aria-label="Main navigation">
+      <a href="#ontology">Ontology</a><a href="#products">Solutions</a><a href="#method">Process</a><a href="#academy">Training</a><a href="#proof-eval">Evaluation</a>
+    </nav>
+    <div class="nav-actions"><a class="language-switch" href="index.html" lang="ko" aria-label="한국어로 보기">KO</a><a href="#contact" class="btn btn-coral">Talk to us</a></div>
+    <button class="burger" id="burger" aria-label="Open menu" aria-expanded="false" aria-controls="menu">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+  </div>
+</header>
+
+<main id="top">
+<!-- HERO -->
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div class="rv">
+      <span class="eyebrow">Enterprise AI · Data · Agents</span>
+      <h1>From factory data<br>to action with AI.</h1>
+      <p>We connect data through document parsing and ontology design,<br class="desktop-break"> then build enterprise AI that works with your manufacturing systems.</p>
+      <div class="hero-prods"><span class="chip dark">Document AI</span><span class="chip dark">Agent Orchestration</span><span class="chip dark">AI Enablement</span></div>
+      <div class="hero-cta">
+        <a href="#contact" class="btn btn-coral">Discuss your project
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a href="#products" class="btn btn-ghost">Explore solutions</a>
+      </div>
+      <div class="hero-note">Start with a workflow, not confidential documents.</div>
+    </div>
+
+    <div class="hero-art" aria-hidden="true">
+      <svg viewBox="0 0 620 520" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs><linearGradient id="wire" x1="60" y1="40" x2="570" y2="480" gradientUnits="userSpaceOnUse"><stop stop-color="#bce4d3" stop-opacity=".1"/><stop offset=".5" stop-color="#bce4d3" stop-opacity=".6"/><stop offset="1" stop-color="#bce4d3" stop-opacity=".05"/></linearGradient></defs>
+        <g stroke="url(#wire)"><path d="M65 180 310 40 555 180 555 340 310 480 65 340Z"/><path d="M65 180 310 320 555 180M310 320V480M310 40V200M65 340 310 200 555 340"/><path d="M188 110 433 250 433 410M188 410V250L433 110M65 260 310 120 555 260 310 400Z"/><path d="M188 110V270L310 340 433 270V110M65 180 310 40 555 180"/></g>
+        <g fill="#a5cebc"><circle cx="310" cy="200" r="5"/><circle cx="310" cy="320" r="4"/><circle cx="433" cy="250" r="4"/><circle cx="188" cy="250" r="3"/><circle cx="65" cy="180" r="3"/><circle cx="555" cy="340" r="3"/></g>
+      </svg>
+      <span class="art-label art-a">01 / DOCUMENT</span><span class="art-label art-b">02 / INTELLIGENCE</span><span class="art-label art-c">03 / ACTION</span>
+    </div>
+  </div>
+</section>
+
+<!-- CAPABILITIES -->
+<div class="proof"><div class="wrap">
+<div class="proof-head"><b>Enterprise AI that connects manufacturing data.</b> Document parsing · AI agents · Training</div>
+<div class="proof-grid">
+<div class="pf"><b>01</b><span>Parsing · Structuring</span></div>
+<div class="pf"><b>02</b><span>Domain ontology</span></div>
+<div class="pf"><b>03</b><span>Data pipelines</span></div>
+<div class="pf"><b>04</b><span>Agent integration</span></div>
+<div class="pf"><b>05</b><span>Evaluation · Operations</span></div>
+<div class="pf"><b>06</b><span>Training · Enablement</span></div>
+</div></div></div>
+
+<!-- PROBLEMS -->
+<section id="why">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="eyebrow">Why</span>
+      <h2>Beyond model adoption.<br>Built for operations.</h2>
+      <p class="lead">Data quality, system integration, evaluation and team capability. We address the four foundations of enterprise AI together.</p>
+    </div>
+    <div class="problems">
+      <article class="prob rv"><span class="num">01</span><h3>Unstructured data</h3><p>Mixed scans, spreadsheets and CAD drawings can lead to unreliable answers without clear sources.</p><span class="fix">→ Document AI</span></article>
+      <article class="prob rv"><span class="num">02</span><h3>Disconnected systems</h3><p>A chatbot provides an answer, but people still copy, email and re-enter it across systems.</p><span class="fix">→ AI Agent Development</span></article>
+      <article class="prob rv"><span class="num">03</span><h3>Missing evaluation</h3><p>A convincing demo is not enough to justify scaling without measurable acceptance criteria.</p><span class="fix">→ Reference-based evaluation</span></article>
+      <article class="prob rv"><span class="num">04</span><h3>Capability gaps</h3><p>When only a few people know the tools, teams fall back on familiar manual processes.</p><span class="fix">→ Enterprise AI Training</span></article>
+    </div>
+  </div>
+</section>
+
+<!-- PRODUCTS -->
+<section id="products" class="products">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="eyebrow">Services</span>
+      <h2>From data to action.<br>One connected approach.</h2>
+      <p class="lead">Document pipelines, agent orchestration and team enablement. We scope each engagement around data maturity and operational requirements.</p>
+    </div>
+    <div class="prods">
+      <article class="prod rv">
+        <div class="pname"><span class="pico"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h3M8 17h6M14 13h2"/></svg></span><div><div class="kicker">01 · MNH PARSE</div><h3>Document AI</h3></div></div>
+        <p class="one">Turn unstructured documents into structured data for retrieval and reasoning.</p>
+        <dl>
+          <div><dt>Who it is for</dt><dd>Teams whose scans, tables and drawings make retrieval and AI answers unreliable</dd></div>
+          <div><dt>Deliverables</dt><dd><ul><li>Document-specific ingestion and parsing pipelines</li><li>Schemas for tables and drawing information</li><li>Page- and coordinate-level provenance</li><li>Extraction quality report</li></ul></dd></div>
+        </dl>
+        <div class="tags"><span class="chip">Layout analysis</span><span class="chip">Table extraction</span><span class="chip">DWG · DXF</span><span class="chip">Source coordinates</span></div>
+        <a href="#parse" class="more">Explore the pipeline →</a>
+      </article>
+      <article class="prod feature rv">
+        <div class="pname"><span class="pico"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><path d="M17.5 14v7M14 17.5h7"/></svg></span><div><div class="kicker">02 · MNH AGENT</div><h3>AI Agent Development</h3></div></div>
+        <p class="one">Design agent workflows that connect business context, tool calls and human approval.</p>
+        <dl>
+          <div><dt>Who it is for</dt><dd>Teams repeating the same tasks across email, documents and business systems</dd></div>
+          <div><dt>Deliverables</dt><dd><ul><li>Workflow and approval policy design</li><li>Role-based agents and API integration</li><li>Execution monitoring and audit logs</li><li>Performance evaluation and handover</li></ul></dd></div>
+        </dl>
+        <div class="tags"><span class="chip dark">Multi-agent</span><span class="chip dark">MCP tools</span><span class="chip dark">Approval flow</span><span class="chip dark">On-premises</span></div>
+        <a href="#agent" class="more">Explore agent operations →</a>
+      </article>
+      <article class="prod rv">
+        <div class="pname"><span class="pico"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c3 2 9 2 12 0v-5"/></svg></span><div><div class="kicker">03 · MNH ACADEMY</div><h3>Enterprise AI Training</h3></div></div>
+        <p class="one">Build role-specific skills, from AI strategy to prompt design and hands-on agent development.</p>
+        <dl>
+          <div><dt>Who it is for</dt><dd>Organizations defining their AI direction or helping teams adopt existing tools</dd></div>
+          <div><dt>Deliverables</dt><dd><ul><li>Executive AI strategy sessions</li><li>Role-based practical courses</li><li>Hands-on agent workshops</li><li>Internal learning and exercise materials</li></ul></dd></div>
+        </dl>
+        <div class="tags"><span class="chip">Executives</span><span class="chip">Practitioners</span><span class="chip">Workshops</span><span class="chip">Pilot integration</span></div>
+        <a href="#academy" class="more">Explore training →</a>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ONTOLOGY DETAIL -->
+<section id="ontology" class="ontology-section">
+<div class="wrap"><div class="sec-head rv"><span class="eyebrow">Domain Ontology</span>
+<h2>Shared data.<br>Shared meaning.</h2>
+<p class="lead">An ontology models business entities, relationships and rules. Beyond retrieving a document, it helps AI identify which part and drawing revision it refers to, and use that context in a workflow.</p></div>
+<div class="ontology-layout">
+<div class="knowledge-map" aria-label="Example manufacturing ontology relationships">
+<div class="map-label">MANUFACTURING KNOWLEDGE MODEL</div>
+<div class="map-row"><span>Drawing · Revision</span><small>defines →</small><strong>Item</strong><small>is part of →</small><span>BOM</span></div>
+<div class="map-row"><span>Supplier</span><small>supplies →</small><strong>Material</strong><small>feeds into →</small><span>Process</span></div>
+<div class="map-row"><span>Inspection criteria</span><small>validates →</small><strong>Quality record</strong><small>references →</small><span>Order · Lot</span></div>
+<p>Entity IDs · Properties · Relationships · Sources · Access rights</p>
+</div>
+<div class="ontology-copy"><h3>Beyond search results.<br>Evidence in context.</h3><p>A part specification lookup can reference its drawing revision, applicable BOM and inspection criteria together. Retrieval, rule checks and agent inputs use the same business definitions.</p><p class="caption">Illustrative conceptual design. Relationship models and storage choices depend on the source data and intended use.</p></div>
+</div>
+<div class="detail-grid">
+<article><span class="detail-index">01 / DEFINE</span><h3>Define the domain</h3><p>Work with domain experts to define terms, entities, properties and relationships, and agree on code, revision and validity rules.</p><b>Outputs</b><p>Glossary · Entity and relationship model · Mapping rules</p></article>
+<article><span class="detail-index">02 / CONNECT</span><h3>Connect the data</h3><p>Map document extractions to accessible ERP, MES and PLM data, with provenance and refresh rules.</p><b>Outputs</b><p>Field mappings · Data flow diagram · Quality rules</p></article>
+<article><span class="detail-index">03 / APPLY</span><h3>Apply business context</h3><p>Connect relationship-based queries, RAG context and agent tool inputs, then validate against representative questions.</p><b>Outputs</b><p>Query scenarios · Evaluation questions · Integration specification</p></article>
+</div>
+</div></section>
+
+<!-- PARSER DEEP -->
+<section id="parse">
+  <div class="wrap deep">
+    <div>
+      <div class="sec-head rv" style="margin-bottom:28px">
+        <span class="eyebrow">01 · MNH Parse</span>
+        <h2>Documents into knowledge.<br>Data into context.</h2>
+        <p class="lead">We analyze layouts and tables, then design a domain ontology of business terms, entities and relationships. This provides context for retrieval-augmented generation (RAG) and agents.</p>
+      </div>
+      <div class="pipe">
+        <div class="pstep rv"><span class="pn">1</span><div><h3>01 · Ingestion</h3><p>Assess available connections and access rights across drives, email and collaboration systems, then design ingestion pipelines.</p></div></div>
+        <div class="pstep rv"><span class="pn">2</span><div><h3>02 · Document Parsing</h3><p>Use OCR and layout analysis to extract text, tables, images and drawing information with rules tailored to each document type.</p><div class="tags"><span class="chip">Layout</span><span class="chip">OCR</span><span class="chip">Table merging</span><span class="chip">PDF · Word · Excel · CAD</span></div></div></div>
+        <div class="pstep rv"><span class="pn">3</span><div><h3>03 · Ontology</h3><p>Define entities such as parts, suppliers and contracts, and the relationships between them. Connect extracted fields with source metadata in a consistent data model.</p></div></div>
+        <div class="pstep rv"><span class="pn">4</span><div><h3>04 · Evaluation</h3><p>Measure field-level extraction accuracy, omissions and error types against a reference dataset to identify improvements.</p></div></div>
+        <div class="pstep rv"><span class="pn">5</span><div><h3>05 · Retrieval</h3><p>Design chunking, indexing and metadata filters, then connect retrieval to RAG and agents with appropriate refresh and access policies.</p></div></div>
+      </div>
+    </div>
+    <div class="rv">
+      <div class="ba">
+        <div class="ba-head"><b>Scanned RFQ → structured data</b><span class="chip dark">1 table · 3 pages</span></div>
+        <div class="ba-cols">
+          <div class="scan"><div class="t">REQUEST FOR QUOTATION</div>
+            <table><tr><th>Item</th><th>Specification</th><th>Quantity</th></tr><tr><td>SUS304 sheet</td><td>2t×1219</td><td>120</td></tr><tr><td>M10 bolt</td><td>L40</td><td>2,000</td></tr><tr><td>Processing</td><td>Laser</td><td>1 lot</td></tr></table>
+            <div style="margin-top:8px">Due: Dec 4, 2026</div><div class="stamp">SEAL</div></div>
+          <div class="json">[
+ { <span class="k">"Item"</span>: <span class="s">"SUS304 sheet"</span>,
+   <span class="k">"Specification"</span>: <span class="s">"2t×1219"</span>,
+   <span class="k">"Quantity"</span>: 120,
+   <span class="k">"Source"</span>: <span class="s">"p2·table1·r1"</span> },
+ { <span class="k">"Item"</span>: <span class="s">"M10 bolt"</span>,
+   <span class="k">"Quantity"</span>: 2000,
+   <span class="k">"Source"</span>: <span class="s">"p2·table1·r2"</span> },
+ { <span class="k">"Due date"</span>: <span class="s">"2026-12-04"</span>,
+   <span class="k">"Source"</span>: <span class="s">"p2·text"</span> }
+]</div>
+        </div>
+        <div class="ba-foot"><div><b>Table structure</b><span>Rows and columns retained</span></div><div><b>Source</b><span>Page, table and row</span></div><div><b>Review</b><span>Missing fields flagged</span></div></div>
+      </div>
+      <p class="caption">Illustrative interface · Sample data</p>
+    </div>
+  </div>
+</section>
+
+<!-- AGENT SHOWCASE -->
+<section id="agent" class="show">
+  <div class="wrap show-grid">
+    <div class="rv">
+      <div class="board">
+        <div class="board-head">
+          <h3>Execution and approvals.<br><em>One workflow.</em></h3>
+          <div class="big"><small>Example · Pending approvals</small><b>26 tasks</b></div>
+        </div>
+        <div class="decide">
+          <div class="dcard"><span class="n">16<small>tasks</small></span><p>Quote drafts based on cost sheets and prior contracts</p><div class="act"><span class="y">Approve</span><span>Hold</span></div></div>
+          <div class="dcard"><span class="n">6<small>tasks</small></span><p>Draft replies to supplier delivery-change requests</p><div class="act"><span class="y">Approve</span><span>Edit</span></div></div>
+          <div class="dcard"><span class="n">4<small>tasks</small></span><p>Budget alerts against this week’s spending plan</p><div class="act"><span class="y">Review</span><span>Assign</span></div></div>
+        </div>
+        <div class="lanes" aria-hidden="true">
+          <div class="lane"><b>Intake agent</b>Classify email and attachments<div class="bar"><i style="width:92%"></i></div></div>
+          <div class="lane"><b>Document agent</b>Parse and structure<div class="bar"><i style="width:78%"></i></div></div>
+          <div class="lane"><b>Drafting agent</b>Draft quotes and replies<div class="bar"><i style="width:64%"></i></div></div>
+          <div class="lane"><b>Review agent</b>Check rules and amounts<div class="bar"><i style="width:48%"></i></div></div>
+        </div>
+      </div>
+      <p class="caption">Illustrative interface · Sample data</p>
+    </div>
+    <div class="points">
+      <div class="sec-head rv" style="margin-bottom:8px"><span class="eyebrow">02 · MNH Agent</span><h2>Controlled execution.<br>Traceable workflows.</h2></div>
+      <div class="point rv"><span class="pn">1</span><div><h3>Role-based orchestration</h3><p>Separate classification, extraction, drafting and review. Define each agent’s inputs, outputs and exception paths.</p></div></div>
+      <div class="point rv"><span class="pn">2</span><div><h3>Interfaces to existing systems</h3><p>Assess APIs and connectors for email, drives and ERP systems. Use MCP for tool integration where supported.</p></div></div>
+      <div class="point rv"><span class="pn">3</span><div><h3>Human-in-the-loop controls</h3><p>Design human approvals for consequential actions such as external messages and payments, with execution logs and failure and retry policies.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- AGENT DELIVERY -->
+<section class="agent-delivery"><div class="wrap">
+<div class="sec-head"><span class="eyebrow">From Answer to Action</span><h2>From chatbot answers<br>to agent-driven workflows.</h2><p class="lead">Separate evidence retrieval from execution. First define what the model may decide, what rules must verify and where a person must approve.</p></div>
+<div class="workflow-strip"><div><small>01 / CONTEXT</small><b>Retrieve documents and records</b><span>Gather evidence within access rights</span></div><div><small>02 / REASON</small><b>Draft and plan</b><span>Use ontology and business rules</span></div><div><small>03 / APPROVE</small><b>Validate policy and approve</b><span>Human review and exception handling</span></div><div><small>04 / EXECUTE</small><b>Execute APIs and log results</b><span>Verify outcomes and handle failures</span></div></div>
+<div class="detail-grid">
+<article><h3>Manufacturing workflows</h3><p>Start with a focused workflow: draft a quote from an RFQ and part data, or prepare a quality report from inspection records.</p><b>Implementation scope</b><p>Workflow definition · Agent and tool design · Approval flow</p></article>
+<article><h3>Operational controls</h3><p>Design least-privilege access, input and output validation, duplicate-action prevention and retry conditions. Escalate failures or insufficient evidence for human review.</p><b>Implementation scope</b><p>Access policies · Exception handling · Execution log design</p></article>
+<article><h3>Measurable pilots</h3><p>Measure task success, evidence relevance, approval and correction rates, processing time and cost. Agree on evaluation criteria and operating scope before work begins.</p><b>Implementation scope</b><p>Evaluation set · Test results · Operations guide</p></article>
+</div><p class="caption">The scope of integrations, automated execution and controls is confirmed after assessing APIs, permissions and infrastructure.</p>
+</div></section>
+
+<!-- EVALUATION -->
+<section id="proof-eval" class="evalsec">
+  <div class="wrap eval-grid">
+    <div>
+      <div class="sec-head rv" style="margin-bottom:24px">
+        <span class="eyebrow">How we prove it</span>
+        <h2>Measure quality with<br>evaluation datasets.</h2>
+        <p class="lead">Define extraction accuracy, retrieval quality, task success and processing cost for each workflow, then compare under consistent conditions.</p>
+      </div>
+      <div class="rules">
+        <div class="rule rv"><i>1</i><div><b>Start with reference answers.</b> Use 50–100 real-work examples with answers reviewed by subject-matter experts.</div></div>
+        <div class="rule rv"><i>2</i><div><b>Compare like for like.</b> Use the same inputs, reference answers and budget for before-and-after evaluation.</div></div>
+        <div class="rule rv"><i>3</i><div><b>Report failure modes.</b> Show where and why errors occurred, not just an average score.</div></div>
+        <div class="rule rv"><i>4</i><div><b>Scale based on evidence.</b> Do not expand when acceptance criteria are not met.</div></div>
+      </div>
+    </div>
+    <div class="rv">
+      <div class="report">
+        <div class="report-head"><b>Pilot evaluation report</b><span class="chip coral">80 reference cases</span></div>
+        <div class="metrics">
+          <div class="metric"><small>Extraction accuracy</small><div class="row"><span class="from">71%</span><span class="to">96%</span></div></div>
+          <div class="metric"><small>Processing time per case</small><div class="row"><span class="from">18 min</span><span class="to">2 min</span></div></div>
+          <div class="metric"><small>Human review</small><div class="row"><span class="from">All</span><span class="to">12%</span></div></div>
+          <div class="metric"><small>Escalated exceptions</small><div class="row"><span class="to c">7 cases</span></div></div>
+        </div>
+        <div class="fails"><b>Top 3 error types</b>
+          <div><span>Handwritten quantities</span><span>3 cases</span></div>
+          <div><span>Multi-page table headers</span><span>2 cases</span></div>
+          <div><span>Abbreviations in drawing notes</span><span>2 cases</span></div>
+        </div>
+      </div>
+      <p class="caption">Illustrative report only. Figures are sample data, not actual results. Outcomes depend on the workflow.</p>
+    </div>
+  </div>
+</section>
+
+<!-- METHOD -->
+<section id="method" style="padding-top:0;background:#fff">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="eyebrow">Process</span>
+      <h2>Clear deliverables.<br>At every stage.</h2>
+    </div>
+    <div class="steps">
+      <div class="step rv"><span class="tag">STEP 01 · DISCOVER</span><h3>Choose a workflow</h3><p>Select a repeatable workflow with defined rules and measurable outcomes.</p><div class="out"><b>Deliverables</b>Assessment · Pilot scope · Proposal</div></div>
+      <div class="step rv"><span class="tag">STEP 02 · DESIGN</span><h3>Design the data and evaluation</h3><p>Define evaluation datasets, the domain ontology, agent roles and interfaces.</p><div class="out"><b>Deliverables</b>Evaluation set · Data model · Architecture</div></div>
+      <div class="step active rv"><span class="tag">STEP 03 · BUILD</span><h3>Build parsers and agents</h3><p>Connect existing tools, test real workflows and evaluate against reference answers.</p><div class="out"><b>Deliverables</b>Working system · Pilot report</div></div>
+      <div class="step rv"><span class="tag">STEP 04 · ENABLE</span><h3>Train and hand over</h3><p>Train your team to operate the system and identify the next workflow.</p><div class="out"><b>Deliverables</b>Operations manual · Training · Scale-up plan</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- DO / DON'T -->
+<section id="scope">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="eyebrow">Our scope</span>
+      <h2>Between models and systems,<br>we build the execution layer.</h2>
+      <p class="lead">We focus on AI systems integration for manufacturing data and workflows, not on developing foundation models. We select and evaluate models, parsing engines and tools against your requirements.</p>
+    </div>
+    <div class="dodont">
+      <div class="dd do rv"><h3>What MNH does</h3>
+        <ul><li><div><b>Workflow design</b>Define what AI should do and where human approval is needed.</div></li>
+          <li><div><b>Parser implementation and tuning</b>Select and tune established engines for your document types.</div></li>
+          <li><div><b>Agent development and integration</b>Connect existing systems and record execution history.</div></li>
+          <li><div><b>Reference-based evaluation</b>Provide a quantified before-and-after evaluation report.</div></li>
+          <li><div><b>Training and handover</b>Support your team in building the skills to operate the system.</div></li></ul></div>
+      <div class="dd dont rv"><h3>What we do not do</h3>
+        <ul><li><div><b>Build proprietary foundation models</b>We select models that fit the task.</div></li>
+          <li><div><b>Sell GPU servers or AI platforms</b>We build within customer environments and existing platforms as needed.</div></li>
+          <li><div><b>Deliver unvalidated demos</b>We do not declare success without reference-based evaluation.</div></li>
+          <li><div><b>Move data without authorization</b>Data location and processing scope are agreed contractually.</div></li></ul></div>
+    </div>
+    <div class="engines rv"><b>Engines selected for your requirements</b><div class="tags"><span class="chip">Commercial parsing APIs</span><span class="chip">Claude · GPT</span><span class="chip">Self-hosted open models</span><span class="chip">OCR engines</span></div></div>
+  </div>
+</section>
+
+<!-- MANUFACTURING -->
+<section id="industries" style="padding-top:0">
+<div class="wrap"><div class="sec-head rv"><span class="eyebrow">Manufacturing Intelligence</span>
+<h2>Connected manufacturing data.<br>A foundation for action.</h2>
+<p class="lead">Define parts, drawings, BOMs, processes, suppliers and orders as shared entities and relationships. Use a domain ontology to connect document context and scope agent workflows.</p></div>
+<div class="inds">
+<article class="ind rv"><div class="ind-top"><small>DOCUMENT INTELLIGENCE</small><h3>Drawings · Technical documents</h3></div><div class="ind-body"><div><b>Data challenge</b>Structure part, material, dimension and revision information across drawings and specifications.</div><div><b>Illustrative workflow</b>Parse documents → Map fields and sources → Review gaps → Human verification</div><div class="prodtag"><span class="chip">Parser</span><span class="chip">Extraction evaluation</span></div></div></article>
+<article class="ind rv"><div class="ind-top"><small>DOMAIN ONTOLOGY</small><h3>Parts · BOMs · Processes</h3></div><div class="ind-body"><div><b>Data challenge</b>Reconcile part codes and terms across systems, and define entities, properties and relationships.</div><div><b>Illustrative workflow</b>Define terms → Map data → Model relationships → Connect retrieval context</div><div class="prodtag"><span class="chip">Ontology</span><span class="chip">Data pipelines</span></div></div></article>
+<article class="ind rv"><div class="ind-top"><small>PROCUREMENT WORKFLOW</small><h3>Quotes · Procurement · Orders</h3></div><div class="ind-body"><div><b>Workflow challenge</b>Connect RFQs with cost and supplier data, and define approval criteria.</div><div><b>Illustrative workflow</b>Analyze RFQ → Draft quote → Check terms → Approve and update systems</div><div class="prodtag"><span class="chip">AI agents</span><span class="chip">Approval workflow</span></div></div></article>
+<article class="ind rv"><div class="ind-top"><small>QUALITY KNOWLEDGE</small><h3>Quality · Inspection · History</h3></div><div class="ind-body"><div><b>Workflow challenge</b>Connect inspection standards, certificates and issue histories to find supporting evidence.</div><div><b>Illustrative workflow</b>Structure records → Retrieve evidence → Draft report → Quality team review</div><div class="prodtag"><span class="chip">RAG</span><span class="chip">Evidence tracing</span></div></div></article>
+</div><p class="caption">These are illustrative use cases, not delivery claims or performance guarantees. Integration scope and feasibility are confirmed after a data and systems assessment.</p></div>
+</section>
+
+<!-- SECURITY -->
+<section class="sec">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="eyebrow">Deployment & Security</span>
+      <h2>Security requirements.<br>Built into deployment design.</h2>
+      <p class="lead">Define data classifications, permitted transfers, access rights and operating policies first. Deployment location alone does not guarantee security; we also review model calls and log storage paths.</p>
+    </div>
+    <div class="deploy">
+      <div class="dep rv"><span class="chip">On-Premise</span><h3>On-premises deployment</h3><p>Assess deployment on internal infrastructure. Air-gapped feasibility and external dependencies are reviewed during discovery.</p></div>
+      <div class="dep rv"><span class="chip">Private Cloud</span><h3>Customer-owned cloud</h3><p>Configure the solution within your VPC and access policies, with external API calls and data storage locations defined separately.</p></div>
+      <div class="dep rv"><span class="chip">Hybrid</span><h3>Hybrid deployment</h3><p>Separate internal processing from external model use by data sensitivity, and assess transfer scope and de-identification needs.</p></div>
+    </div>
+    <div class="guards">
+      <div class="guard rv"><b>Source traceability</b>References to supporting pages and locations</div>
+      <div class="guard rv"><b>Approval controls</b>Human approval for sending, payments and publishing</div>
+      <div class="guard rv"><b>Access separation</b>Define visibility by department and role</div>
+      <div class="guard rv"><b>Audit logs</b>Design execution logs, retention and access policies</div>
+    </div>
+  </div>
+</section>
+
+<!-- ACADEMY -->
+<section id="academy">
+<div class="wrap"><div class="sec-head rv"><span class="eyebrow">03 · MNH Academy</span><h2>Enterprise AI training.<br>Capability that stays with you.</h2><p class="lead">Go beyond tool tutorials. Courses are tailored to manufacturing roles: adoption decisions for leaders, output validation for practitioners, and design and operations for implementation teams.</p></div>
+<div class="academy-grid">
+<article class="academy-card"><span class="who">Executives · Business leaders</span><h3>Enterprise AI strategy</h3><p>Before deciding what to automate, decide where and how to validate its value.</p><dl><dt>Core topics</dt><dd>Use-case discovery · Data readiness · Investment and operating costs · Adoption risks · Pilot criteria</dd><dt>Workshops</dt><dd>Assess manufacturing opportunities and constraints in a prioritization workshop</dd><dt>Outputs</dt><dd>AI opportunity map · Pilot scope · Decision checklist</dd></dl></article>
+<article class="academy-card"><span class="who">Production · Quality · Procurement · Support</span><h3>Role-based AI skills</h3><p>Learn to handle internal materials responsibly and review outputs for evidence and errors.</p><dl><dt>Core topics</dt><dd>Prompt structure · Document analysis · Evidence checks · Sensitive data handling · Output review</dd><dt>Workshops</dt><dd>Compare sample quotes, summarize inspection records and draft business reports</dd><dt>Outputs</dt><dd>Role-specific prompt templates · Review checklists · Exercise outputs</dd></dl></article>
+<article class="academy-card"><span class="who">IT · Data · Automation teams</span><h3>Ontology and agent design</h3><p>Define data meaning and practice connecting retrieval with tool execution.</p><dl><dt>Core topics</dt><dd>Document parsing · Entity and relationship models · RAG · API/MCP integration · Approvals and exceptions · Evaluation</dd><dt>Workshops</dt><dd>Build a part–drawing relationship model and a document-based agent prototype</dd><dt>Outputs</dt><dd>Mini ontology · Workflow design · Test scenarios</dd></dl></article>
+<article class="academy-card academy-accent"><span class="who">Cross-functional teams · Pilot preparation</span><h3>Pilot project workshop</h3><p>Define scope and responsibilities to turn a learning exercise into an implementation-ready pilot plan.</p><dl><dt>Core topics</dt><dd>Business requirements · Data sampling · Evaluation sets · Demo review · Handover planning</dd><dt>Workshops</dt><dd>Design one workflow and refine it through peer review</dd><dt>Outputs</dt><dd>Pilot brief · Evaluation criteria · Role-based action plan</dd></dl></article>
+</div>
+<div class="academy-foot"><div><b>Learning design</b><p>Assess roles and skills → Select manufacturing scenarios → Practice → Review outcomes</p></div><div><b>Data principles</b><p>Use synthetic or de-identified samples by default. Internal data is used only within approved boundaries and environments.</p></div><div><b>Course scope</b><p>Agree on duration, group size, prerequisites, tools and outputs in advance. Training alone does not guarantee a production-ready system.</p></div></div>
+</div></section>
+
+<!-- FAQ -->
+<section class="faq">
+  <div class="wrap">
+    <div class="sec-head rv"><span class="eyebrow">FAQ</span><h2>Before you begin.</h2></div>
+    <div class="faq-list">
+      <details class="rv"><summary>Will our data go to external AI providers?</summary><p>It depends on the models, parsing engines and APIs, not just deployment location. Even an internal server or VPC may make external calls. We review data flows, transfer scope and storage locations during design and agree on processing boundaries.</p></details>
+      <details class="rv"><summary>How does an ontology differ from RAG?</summary><p>RAG retrieves information to inform a model’s answer. An ontology defines the meaning of business entities, relationships and rules. They can work together, but not every use case needs a complex graph system.</p></details>
+      <details class="rv"><summary>Can you work with scans and CAD drawings?</summary><p>We process PDFs, Word files, spreadsheets, images and DWG/DXF drawings by type, preserving table and drawing structure. HWP conversion is assessed during discovery. Handwriting and poor scans may reduce accuracy, so each document type is evaluated against reference data first.</p></details>
+      <details class="rv"><summary>Do we need to replace existing systems?</summary><p>Our starting point is integration with your existing email, drives, collaboration tools and ERP. Available integration methods are assessed during discovery.</p></details>
+      <details class="rv"><summary>What if the pilot does not meet expectations?</summary><p>We evaluate the pilot against reference data. If it misses the agreed criteria, we report the causes and may recommend not scaling.</p></details>
+      <details class="rv"><summary>How is pricing determined?</summary><p>We quote after reviewing integrations, data permissions and operating requirements, alongside the proposed pilot scope. Training fees depend on participant numbers and course design.</p></details>
+      <details class="rv"><summary>Who operates the system after delivery?</summary><p>We provide training and operating manuals for your team. Ongoing support can be arranged under a separate agreement.</p></details>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="wrap contact-grid">
+    <div class="rv">
+      <span class="eyebrow">Contact</span>
+      <h2 style="margin-top:14px">Start with one workflow.<br>Tell us what should change.</h2>
+      <p class="lead" style="margin-top:16px">You do not need a finished RFP or approved budget. We can assess fit, pilot scope and pricing around a single workflow.</p>
+      <div class="c-points">
+        <div><i>1</i>Review your workflow and data environment</div>
+        <div><i>2</i>Define evaluation criteria and pilot scope</div>
+        <div><i>3</i>Start small and measure the outcome</div>
+      </div>
+    </div>
+    <form id="form" class="rv" novalidate>
+      <fieldset><legend>Interested in</legend>
+        <div class="pick"><label><input type="checkbox" name="p" value="parse">Document parsing</label><label><input type="checkbox" name="p" value="agent">AI agents</label><label><input type="checkbox" name="p" value="academy">Training</label><label><input type="checkbox" name="p" value="unknown">Not sure yet</label></div></fieldset>
+      <div class="row2">
+        <label>Company · Department<input name="company" required autocomplete="organization" placeholder="e.g. Procurement, ABC Manufacturing"></label>
+        <label>Name<input name="name" required autocomplete="name" placeholder="Your name"></label>
+      </div>
+      <label>Email<input type="email" name="email" required autocomplete="email" placeholder="name@company.com"></label>
+      <label>Workflow to improve<textarea name="task" required placeholder="e.g. Read scanned supplier RFQs and draft quotations, 20 cases per day"></textarea></label>
+      <label>Data environment
+        <select name="env"><option value="">Please select</option><option>Cloud allowed</option><option>On-premises only</option><option>Air-gapped network</option><option>Not sure yet</option></select></label>
+      <label class="consent"><input type="checkbox" name="agree" required> I agree to the collection and use of my information for this consultation (<a href="privacy-en.html" style="text-decoration:underline">Privacy notice</a>). Please do not send confidential documents.</label>
+      <button class="btn btn-dark" type="submit">Review details →</button>
+      <div class="sent" id="sent" role="status"><b>Your entries have been checked.</b> Nothing has been sent. This form is a preview until a submission service is connected.</div>
+      <p class="form-note">Preview form only. Your information is not sent to a server.</p>
+    </form>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="f-grid">
+      <div>
+        <a href="#top" class="logo" style="margin-bottom:14px"><span class="wordmark">MNH<span class="brand-dot">.</span></span><span class="brand-name">MNH</span></a>
+        <p>Enterprise AI connecting data and action.</p>
+        <p style="margin-top:14px">MNH Co., Ltd. · Representative: 유지연<br>Business registration: 282-86-04150<br>3F, 24-9 Yangji-ro, Busanjin-gu, Busan, South Korea<br>Privacy officer: 김화현</p>
+      </div>
+      <div><h4>Solutions</h4><ul><li><a href="#parse">Document AI</a></li><li><a href="#agent">AI Agent Development</a></li><li><a href="#academy">Enterprise AI Training</a></li><li><a href="#proof-eval">Evaluation approach</a></li></ul></div>
+      <div><h4>Contact</h4><ul><li><a href="#contact">Discuss your project</a></li><li>Start with a single-workflow pilot</li><li>Training inquiries</li></ul></div>
+    </div>
+    <div class="f-bottom"><span>© 2026 MNH Co., Ltd.</span><a href="privacy-en.html">Privacy policy</a></div>
+  </div>
+</footer>
+
+<script>
+const b=document.getElementById('burger'),m=document.getElementById('menu');
+b.addEventListener('click',()=>{const o=m.classList.toggle('open');b.setAttribute('aria-expanded',o)});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){m.classList.remove('open');b.setAttribute('aria-expanded','false');}});
+m.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{m.classList.remove('open');b.setAttribute('aria-expanded',false)}));
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.1});
+document.querySelectorAll('.rv').forEach((el,i)=>{el.style.transitionDelay=(i%4)*70+'ms';io.observe(el)});
+const f=document.getElementById('form');
+f.addEventListener('submit',e=>{e.preventDefault();if(!f.checkValidity()){f.reportValidity();return}document.getElementById('sent').style.display='block'});
+</script>
+</body>
+</html>
